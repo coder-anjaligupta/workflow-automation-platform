@@ -99,7 +99,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
 
         <h1 className="text-2xl font-bold text-blue-700 mb-2">
-          My Automation Flow Canvas
+          AutoFlow Engine
         </h1>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -274,7 +274,7 @@ const RegisterPage = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
 
         <h1 className="text-2xl font-bold text-blue-700 mb-2">
-          My Automation Flow Canvas
+          AutoFlow Engine
         </h1>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -482,7 +482,7 @@ const ProfilePage = () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          My Automation Flow Canvas
+          AutoFlow Engine
         </h1>
 
         <button
@@ -1174,7 +1174,7 @@ const loadWorkflow = async () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          My Automation Flow Canvas
+          AutoFlow Engine
         </h1>
 
 
@@ -1731,7 +1731,7 @@ const AboutPage = () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          My Automation Flow Canvas
+          AutoFlow Engine
         </h1>
 
         <Link
