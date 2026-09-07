@@ -1,7 +1,7 @@
 
 # Workflow Automation Platform
 
-A full-stack workflow automation platform built with FastAPI (Backend) and React Flow (Frontend). Users can create, save, execute, and monitor custom multi-step node-based workflows.
+A full-stack Python-Based Drag & Drop Workflow Automation Platform built with FastAPI (Backend) and React Flow (Frontend). Users can create, save, execute, and monitor custom multi-step node-based workflows.
 
 ---
 
@@ -82,6 +82,7 @@ The React frontend will be accessible at `http://localhost:5173`.
 
 ## Project Architecture
 
+```text
 +-------------------------------------------------------+
 |                    React Frontend                     |
 |  (React Flow Canvas, App.jsx, CustomNode Components)  |
@@ -105,7 +106,7 @@ v          v                                 v
 +-----------------------+        +----------------------+
 
 ---
-
+```
 
 ## API Documentation
 
@@ -140,6 +141,7 @@ v          v                                 v
 
 ## Folder Structure
 
+```text
 my-fullstack-app/
 │
 ├── backend/
@@ -169,6 +171,7 @@ my-fullstack-app/
 
 
 ---
+```
 
 ## Workflow Engine Design
 
