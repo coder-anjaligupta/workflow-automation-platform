@@ -53,11 +53,11 @@ docker-compose down -v
 ```
 ---
 
-* #### **Backend API:** `http://localhost:8000`
+* **Backend API:** `http://localhost:8000`
 
-* #### **Frontend App:** `http://localhost:5173`
+* **Frontend App:** `http://localhost:5173`
 
-* #### **Swagger Docs:** `http://localhost:8000/docs`
+* **Swagger Docs:** `http://localhost:8000/docs`
 
 ---
 ### **Option 2: Local Manual Setup**
@@ -139,9 +139,9 @@ npm run dev
 
 FastAPI provides built-in interactive Swagger UI documentation.
 
-   * #### **Swagger UI:** `http://localhost:8000/docs`
+   * **Swagger UI:** `http://localhost:8000/docs`
 
-   * #### **ReDoc:** `http://localhost:8000/redoc`
+   * **ReDoc:** `http://localhost:8000/redoc`
 
 ### **General Endpoints**
 ```text
@@ -226,17 +226,17 @@ my-fullstack-app/
 ## 6. ⚙️ **Workflow Engine Design**
 The core execution engine processes visual graphs as Directed Acyclic Graphs (DAGs):
 
-   * #### **Graph Parsing:** Frontend graph layouts (nodes and connecting edges) are parsed into JSON arrays.
+   * **Graph Parsing:** Frontend graph layouts (nodes and connecting edges) are parsed into JSON arrays.
 
-   * #### **Topological Sorting:** The engine resolves node dependencies to determine execution order.
+   * **Topological Sorting:** The engine resolves node dependencies to determine execution order.
 
-   * #### **Node Handlers & Dispatchers:** Each node type (`Start`, `File Upload`, `Email`, `Slack`, `End`) routes to a dedicated execution function.
+   * **Node Handlers & Dispatchers:** Each node type (`Start`, `File Upload`, `Email`, `Slack`, `End`) routes to a dedicated execution function.
 
-   * #### **Execution Context:** Data and payload outputs pass seamlessly from parent nodes to child nodes.
+   * **Execution Context:** Data and payload outputs pass seamlessly from parent nodes to child nodes.
 
-   * #### **Error Handling & State Persistence:** Failure at any node halts execution, captures execution logs/stack traces, and persists status (`SUCCESS`, `FAILED`) into PostgreSQL.
+   * **Error Handling & State Persistence:** Failure at any node halts execution, captures execution logs/stack traces, and persists status (`SUCCESS`, `FAILED`) into PostgreSQL.
 
-   * #### **Logging:** Persists execution logs with execution timestamp and status back to SQLite.
+   * **Logging:** Persists execution logs with execution timestamp and status back to SQLite.
 
 ---
 
@@ -274,7 +274,7 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
 
 ### **Table Definitions**
 
-1. #### **Users Table**
+**1. Users Table**
 
         id (INTEGER, Primary Key)
 
@@ -284,7 +284,8 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
 
         password (VARCHAR, Hashed string, Non-nullable)
 
-2. #### **Workflows Table**
+**2. Workflows Table**
+
         id (INTEGER, Primary Key)
 
         name (VARCHAR, Non-nullable)
@@ -297,7 +298,8 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
 
         user_id (INTEGER, Foreign Key referencing users.id)
 
-3. #### **Executions Table**
+**3. Executions Table**
+
         id (INTEGER, Primary Key)
 
         workflow_id (INTEGER, Foreign Key referencing workflows.id)
@@ -318,7 +320,7 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
 
 ## 8. 🔄 **Sample Workflows**
 
-### **1. Custom Python Data Processing Workflow**
+**1. Custom Python Data Processing Workflow**
 ---
 
    * **Goal:** Run custom Python computational scripts and validate output responses safely.
@@ -339,7 +341,8 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
 
        4. Saves execution state to PostgreSQL database.
 
-### **2. Conditional Email Alert Dispatcher**
+---
+**2. Conditional Email Alert Dispatcher**
 ---
 
    * **Goal:** Validate business conditions dynamically and trigger automated email notifications.
@@ -361,8 +364,8 @@ The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic mig
        3. If condition evaluates to False, execution routes to fallback Logger Node.
 
        4. Step execution details and status codes are stored persistently.
-
-### **3. Document Ingestion & Verification Pipeline**
+---
+**3. Document Ingestion & Verification Pipeline**
 ---
 
    * **Goal:** Process uploaded user documents, validate file extensions, and record execution logs.
