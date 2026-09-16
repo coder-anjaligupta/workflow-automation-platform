@@ -492,8 +492,6 @@ def execute_saved_workflow(
     # Execute workflow
     # ------------------------------------------
 
-
-
     try:
 
         print("===================================")
@@ -576,9 +574,6 @@ def execute_saved_workflow(
 
     return result
 
-
-
-    
 # ==========================================
 # PHASE 11: EXECUTION HISTORY
 # ==========================================
@@ -612,5 +607,29 @@ def get_execution_history(
     ).all()
 
     return executions   
+
+
+# ------------------------------------------
+# Direct File Upload API Endpoint
+# ------------------------------------------
+import os
+from fastapi import UploadFile, File
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.post("/api/v2/upload")
+async def upload_file_endpoint(file: UploadFile = File(...)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+        
+    return {
+        "status": "success",
+        "file_name": file.filename,
+        "saved_location": os.path.abspath(file_path)
+    }
+
 
     

@@ -4,7 +4,6 @@ from sqlalchemy.sql import func
 
 from database import Base
 
-
 # ==========================================
 # USERS TABLE
 # Phase 3: Database Design
@@ -24,7 +23,6 @@ class User(Base):
         "Workflow",
         back_populates="owner"
     )
-
 
 # ==========================================
 # WORKFLOWS TABLE

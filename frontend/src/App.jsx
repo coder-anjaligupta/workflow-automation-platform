@@ -1,4 +1,3 @@
-
 import React, {
   useEffect,
   useState,
@@ -28,10 +27,6 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import CustomNode from './components/CustomNode';
-
-
-
-
 
 // ==========================================
 // LOGIN PAGE
@@ -99,7 +94,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
 
         <h1 className="text-2xl font-bold text-blue-700 mb-2">
-          AutoFlow Engine
+          Workflow Automation Platform
         </h1>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -189,8 +184,6 @@ const LoginPage = () => {
 };
 
 
-
-
 // ==========================================
 // REGISTER PAGE
 // ==========================================
@@ -274,7 +267,7 @@ const RegisterPage = () => {
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
 
         <h1 className="text-2xl font-bold text-blue-700 mb-2">
-          AutoFlow Engine
+          Workflow Automation Platform
         </h1>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-6">
@@ -363,7 +356,6 @@ const RegisterPage = () => {
 
         </form>
 
-
         {/* MESSAGE */}
 
         {registerMessage && (
@@ -373,7 +365,6 @@ const RegisterPage = () => {
           </p>
 
         )}
-
 
         {/* LOGIN LINK */}
 
@@ -397,10 +388,6 @@ const RegisterPage = () => {
 
   );
 };
-
-
-
-
 
 // ==========================================
 // PROFILE PAGE
@@ -482,7 +469,7 @@ const ProfilePage = () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          AutoFlow Engine
+          Workflow Automation Platform
         </h1>
 
         <button
@@ -557,11 +544,6 @@ const ProfilePage = () => {
   );
 };
 
-
-
-
-
-
 // ==========================================
 // 1. FLOW PAGE
 // ==========================================
@@ -593,6 +575,82 @@ const FlowPage = () => {
   const [loadWorkflowId, setLoadWorkflowId] = useState(
     () => localStorage.getItem('workflow_id') || ''
   );
+
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+// const [isDarkMode, setIsDarkMode] = useState(false);
+    
+  
+    // 1. Export Workflow Function
+    
+    const handleExport = () => {
+    if (!reactFlowInstance) {
+      alert("Canvas is not initialized yet!");
+      return;
+    }
+  
+    const flow = reactFlowInstance.toObject();
+  
+    // Save metadata so import can detect ID and Name
+    const exportData = {
+      id: workflowId || loadWorkflowId || "28",
+      name: workflowName || "Imported Workflow",
+      ...flow
+    };
+  
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(exportData, null, 2)
+    )}`;
+  
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', jsonString);
+    downloadAnchor.setAttribute('download', `${workflowName || 'autoflow-workflow'}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+  
+    // 2. Import Workflow Function
+  
+  const handleImport = (event) => {
+    const fileReader = new FileReader();
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      fileReader.readAsText(file, "UTF-8");
+      fileReader.onload = (e) => {
+        try {
+          const flow = JSON.parse(e.target.result);
+          if (flow) {
+            setNodes(flow.nodes || []);
+            setEdges(flow.edges || []);
+  
+            // Read ONLY the real ID stored inside the imported JSON file
+            const realFileId = flow.id || flow.workflow_id || flow.workflowId || "";
+            const importedName = flow.name || flow.workflow_name || flow.workflowName || file.name.replace('.json', '');
+  
+            // Update the UI state strictly with the JSON's internal ID
+            if (typeof setLoadWorkflowId === 'function') {
+              setLoadWorkflowId(realFileId);
+            }
+            if (typeof setWorkflowId === 'function') {
+              setWorkflowId(realFileId);
+            }
+            if (typeof setWorkflowName === 'function') {
+              setWorkflowName(importedName);
+            }
+  
+            if (realFileId) {
+              setSaveMessage(`Workflow loaded from JSON! (ID: ${realFileId})`);
+            } else {
+              setSaveMessage("Workflow loaded from JSON! (No ID found in file)");
+            }
+          }
+        } catch (error) {
+          console.error("Invalid JSON file format:", error);
+          alert("Failed to import workflow. Please provide a valid JSON file.");
+        }
+      };
+    }
+  };
 
 
   // ==========================================
@@ -640,8 +698,6 @@ const FlowPage = () => {
     navigate('/login');
 
   };
-
-
 
   // ==========================================
   // CUSTOM NODE TYPE
@@ -815,6 +871,48 @@ const nodeDefaults = {
       description: '',
       url: '',
       httpMethod: 'GET',
+    },
+  },
+
+
+  'File Upload': {
+    icon: '📁',
+    title: 'File Upload',
+    inputs: ['input'],
+    outputs: ['output'],
+    defaultConfig: {
+      nodeName: 'File Upload',
+      description: 'Handles document and file uploads',
+      allowedExtensions: '.pdf, .png, .csv',
+      maxFileSizeMb: '10',
+      uploadUrl: '/api/upload',
+    },
+  },
+
+  'Email': {
+    icon: '📧',
+    title: 'Email',
+    inputs: ['input'],
+    outputs: ['output'],
+    defaultConfig: {
+      nodeName: 'Email',
+      description: 'Send execution notification email',
+      recipientEmail: 'user@example.com',
+      subject: 'Workflow Alert',
+      body: 'Workflow execution completed.',
+      attachment: '',
+    },
+  },
+  'Slack': {
+    icon: '💬',
+    title: 'Slack',
+    inputs: ['input'],
+    outputs: ['output'],
+    defaultConfig: {
+      nodeName: 'Slack',
+      description: 'Post updates to Slack channel',
+      channel: '#general',
+      message: 'Workflow execution notification.',
     },
   },
 
@@ -1095,7 +1193,7 @@ const updateWorkflow = async () => {
 };
 
 
-  // ==========================================
+// ==========================================
 // LOAD WORKFLOW
 // ==========================================
 
@@ -1174,7 +1272,7 @@ const loadWorkflow = async () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          AutoFlow Engine
+          Workflow Automation Platform
         </h1>
 
 
@@ -1402,9 +1500,44 @@ const loadWorkflow = async () => {
     onDragStart(event, 'End')
   }
   draggable
->
-  ⏹️ End Node
+> 
+   ⏹️ End Node
 </div>
+
+{/* Drag-and-Drop Sidebar Item for File Upload Node */}
+
+<div
+  className="p-3 bg-teal-50 border border-teal-200 rounded-lg cursor-grab font-medium text-teal-700 hover:bg-teal-100 transition active:cursor-grabbing"
+  onDragStart={(event) =>
+    onDragStart(event, 'File Upload')
+  }
+  draggable
+>
+  📁 File Upload Node
+</div>
+
+{/* EMAIL NODE */}
+<div
+  className="p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-grab font-medium text-blue-700 hover:bg-blue-100 transition active:cursor-grabbing mb-2"
+  onDragStart={(event) =>
+    onDragStart(event, 'Email')
+  }
+  draggable
+>
+  📧 Email Node
+</div>
+
+{/* SLACK NODE */}
+<div
+  className="p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-grab font-medium text-purple-700 hover:bg-purple-100 transition active:cursor-grabbing mb-2"
+  onDragStart={(event) =>
+    onDragStart(event, 'Slack')
+  }
+  draggable
+>
+  💬 Slack Node
+</div>
+
 
  </div>
 
@@ -1419,6 +1552,29 @@ const loadWorkflow = async () => {
 
         <div className="flex-1 h-full relative">
 
+            {/* Floating Action Controls */}
+<div className="absolute top-4 right-4 z-10 flex gap-2 bg-white/90 p-2 rounded-lg shadow-md border border-gray-200 backdrop-blur-sm">
+  <button 
+    onClick={handleExport} 
+    className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 font-medium transition-colors"
+  >
+    Export JSON
+  </button>
+
+  <label className="px-3 py-1.5 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 cursor-pointer font-medium transition-colors">
+    Import JSON
+    <input 
+      type="file" 
+      accept=".json" 
+      onChange={handleImport} 
+      className="hidden" 
+    />
+  </label>
+
+</div>
+
+
+
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -1426,6 +1582,7 @@ const loadWorkflow = async () => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onInit={setReactFlowInstance}
             onNodeClick={(event, node) => 
               setSelectedNodeId(node.id)
             }
@@ -1456,7 +1613,7 @@ const loadWorkflow = async () => {
 
 
 {selectedNode && (
-  <div className="fixed top-24 right-6 w-80 bg-white border-2 border-blue-500 rounded-xl shadow-2xl p-5 z-[100]">
+  <div className="fixed top-24 right-6 w-80 bg-white border-2 border-blue-500 rounded-xl shadow-2xl p-5 z-50 max-h-[80vh] overflow-y-auto">
 
 
 <div className="flex items-center justify-between mb-4">
@@ -1601,6 +1758,325 @@ const loadWorkflow = async () => {
       </>
     )}
 
+    {/* FILE UPLOAD NODE CONFIGURATION */}
+{selectedNode.data?.title === 'File Upload' && (
+  <>
+    {/* Allowed File Extensions Input */}
+    <label className="block text-sm font-semibold text-gray-700 mb-1">
+      Allowed File Extensions
+    </label>
+    <input
+      type="text"
+      placeholder=".pdf, .png, .csv, .json"
+      value={selectedNodeConfig.allowedExtensions || ''}
+      onChange={(e) => {
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === selectedNodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    defaultConfig: {
+                      ...node.data.defaultConfig,
+                      allowedExtensions: e.target.value,
+                    },
+                  },
+                }
+              : node
+          )
+        );
+      }}
+      className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+    />
+
+    {/* Max File Size Input (MB) */}
+    <label className="block text-sm font-semibold text-gray-700 mb-1">
+      Max File Size (MB)
+    </label>
+    <input
+      type="number"
+      placeholder="10"
+      value={selectedNodeConfig.maxFileSizeMb || ''}
+      onChange={(e) => {
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === selectedNodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    defaultConfig: {
+                      ...node.data.defaultConfig,
+                      maxFileSizeMb: e.target.value,
+                    },
+                  },
+                }
+              : node
+          )
+        );
+      }}
+      className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+    />
+
+    {/* Upload Target URL Input */}
+    <label className="block text-sm font-semibold text-gray-700 mb-1">
+      Upload Target URL
+    </label>
+    <input
+      type="text"
+      placeholder="https://api.example.com/upload"
+      value={selectedNodeConfig.uploadUrl || ''}
+      onChange={(e) => {
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === selectedNodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    defaultConfig: {
+                      ...node.data.defaultConfig,
+                      uploadUrl: e.target.value,
+                    },
+                  },
+                }
+              : node
+          )
+        );
+      }}
+      className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+    />
+
+    {/* Upload File (Test Input) */}
+    <label className="block text-sm font-semibold text-gray-700 mb-1">
+      Upload File (Test)
+    </label>
+    <input
+      type="file"
+      onChange={(e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const maxMb = parseFloat(selectedNodeConfig.maxFileSizeMb) || 10;
+          const fileSizeMb = file.size / (1024 * 1024);
+
+          if (fileSizeMb > maxMb) {
+            alert(`File size exceeds the limit of ${maxMb} MB!`);
+            e.target.value = '';
+            return;
+          }
+
+          alert(`Selected File: ${file.name} (${fileSizeMb.toFixed(2)} MB)`);
+
+          setNodes((currentNodes) =>
+            currentNodes.map((node) =>
+              node.id === selectedNodeId
+                ? {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      defaultConfig: {
+                        ...node.data.defaultConfig,
+                        uploadedFileName: file.name,
+                      },
+                    },
+                  }
+                : node
+            )
+          );
+        }
+      }}
+      className="w-full border border-gray-300 rounded-lg p-2 mb-4 text-sm text-gray-700 bg-white cursor-pointer"
+    />
+
+
+  </>
+)}
+
+
+  {/* EMAIL NODE */}
+  {selectedNode.data?.title === 'Email' && (
+    <>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">
+        Recipient Email
+      </label>
+      <input
+        type="email"
+        value={selectedNodeConfig.recipientEmail ?? ''}
+        onChange={(e) => {
+          setNodes((currentNodes) =>
+            currentNodes.map((node) =>
+              node.id === selectedNodeId
+                ? {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      defaultConfig: {
+                        ...node.data.defaultConfig,
+                        recipientEmail: e.target.value,
+                      },
+                    },
+                  }
+                : node
+            )
+          );
+        }}
+        className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+      />
+
+      <label className="block text-sm font-semibold text-gray-700 mb-1">
+        Subject
+      </label>
+      <input
+        type="text"
+        value={selectedNodeConfig.subject ?? ''}
+        onChange={(e) => {
+          setNodes((currentNodes) =>
+            currentNodes.map((node) =>
+              node.id === selectedNodeId
+                ? {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      defaultConfig: {
+                        ...node.data.defaultConfig,
+                        subject: e.target.value,
+                      },
+                    },
+                  }
+                : node
+            )
+          );
+        }}
+        className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+      />
+
+  <label className="block text-sm font-semibold text-gray-700 mb-1">
+      Body / Message
+    </label>
+    <textarea
+      rows={4}
+      value={selectedNodeConfig.body ?? ''}
+      onChange={(e) => {
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === selectedNodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    defaultConfig: {
+                      ...node.data.defaultConfig,
+                      body: e.target.value,
+                    },
+                  },
+                }
+              : node
+          )
+        );
+      }}
+      className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+    />
+
+        {/* EMAIL NODE */}
+    {selectedNode.data?.title === 'Email' && (
+      <>
+        {/* Existing fields: Recipient Email, Subject, Body, Attachment */}
+        
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Attachment (File Path / Variable)
+        </label>
+        <input
+          type="text"
+          placeholder="/path/to/file.pdf or {{previous_node.file}}"
+          value={selectedNodeConfig.attachment ?? ''}
+          onChange={(e) => {
+            setNodes((currentNodes) =>
+              currentNodes.map((node) =>
+                node.id === selectedNodeId
+                  ? {
+                      ...node,
+                      data: {
+                        ...node.data,
+                        defaultConfig: {
+                          ...node.data.defaultConfig,
+                          attachment: e.target.value,
+                        },
+                      },
+                    }
+                  : node
+              )
+            );
+          }}
+          className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+        />
+      </>
+    )}
+
+
+  </>
+  )}
+     
+
+  {/* SLACK NODE */}
+  {selectedNode.data?.title === 'Slack' && (
+    <>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">
+        Channel
+      </label>
+      <input
+        type="text"
+        value={selectedNodeConfig.channel ?? ''}
+        onChange={(e) => {
+          setNodes((currentNodes) =>
+            currentNodes.map((node) =>
+              node.id === selectedNodeId
+                ? {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      defaultConfig: {
+                        ...node.data.defaultConfig,
+                        channel: e.target.value,
+                      },
+                    },
+                  }
+                : node
+            )
+          );
+        }}
+        className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+      />
+
+      <label className="block text-sm font-semibold text-gray-700 mb-1">
+        Message
+      </label>
+      <textarea
+        value={selectedNodeConfig.message ?? ''}
+        onChange={(e) => {
+          setNodes((currentNodes) =>
+            currentNodes.map((node) =>
+              node.id === selectedNodeId
+                ? {
+                    ...node,
+                    data: {
+                      ...node.data,
+                      defaultConfig: {
+                        ...node.data.defaultConfig,
+                        message: e.target.value,
+                      },
+                    },
+                  }
+                : node
+            )
+          );
+        }}
+        className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+      />
+    </>
+  )}
+
+
     {/* DELAY */}
 
     {selectedNode.data?.title === 'Delay' && (
@@ -1702,6 +2178,7 @@ const loadWorkflow = async () => {
       </>
     )}
 
+
   </div>
 )}
 
@@ -1731,7 +2208,7 @@ const AboutPage = () => {
       <div className="h-[70px] bg-white border-b border-gray-200 flex items-center justify-between px-6">
 
         <h1 className="text-xl font-bold text-blue-700">
-          AutoFlow Engine
+          Workflow Automation Platform
         </h1>
 
         <Link
@@ -1786,7 +2263,7 @@ function App() {
 
   return (
 
-    <Router>
+    <Router>    
 
       <Routes>
 

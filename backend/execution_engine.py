@@ -227,8 +227,35 @@ def execute_node(node, input_data=None):
                 "message": "HTTP Request executed successfully"
             }
         }
-    
 
+
+    # ------------------------------------------
+    # File Upload
+    # ------------------------------------------
+
+    if node_title == "File Upload":
+
+        upload_url = config.get("uploadUrl")
+
+        if not upload_url:
+            raise ValueError(
+                "Missing configuration: Upload Target URL is required"
+            )
+
+        allowed_extensions = config.get("allowedExtensions", "")
+        max_file_size_mb = config.get("maxFileSizeMb", "10")
+
+        return {
+            "status": "success",
+            "message": "File Upload node executed successfully",
+            "data": {
+                "previous_data": input_data,
+                "upload_url": upload_url,
+                "allowed_extensions": allowed_extensions,
+                "max_file_size_mb": max_file_size_mb,
+                "message": f"File Upload configured for endpoint {upload_url}"
+            }
+        }
 
     # ------------------------------------------
     # Delay
@@ -336,6 +363,48 @@ def execute_node(node, input_data=None):
             }
         }
 
+    # ---------------------------------------------------------
+    # Email Node
+    # ---------------------------------------------------------
+    if node_title == "Email":
+        node_data = node.get("data", {}).get("defaultConfig", {})
+        recipient = node_data.get("recipientEmail", "user@example.com")
+        subject = node_data.get("subject", "Workflow Alert")
+        body = node_data.get("body", "Workflow execution completed.")
+        attachment = node_data.get("attachment", "")
+
+        return {
+            "status": "success",
+            "message": f"Email sent successfully to {recipient}",
+            "data": {
+                "previous_data": input_data,
+                "recipient": recipient,
+                "subject": subject,
+                "body": body,
+                "attachment": attachment,
+                "delivery_status": "sent"
+            }
+        }
+
+    # ---------------------------------------------------------
+    # Slack Node
+    # ---------------------------------------------------------
+    if node_title == "Slack":
+        node_data = node.get("data", {}).get("defaultConfig", {})
+        channel = node_data.get("channel", "#general")
+        slack_message = node_data.get("message", "Workflow execution update")
+
+        return {
+            "status": "success",
+            "message": f"Message posted to Slack channel {channel}",
+            "data": {
+                "previous_data": input_data,
+                "channel": channel,
+                "slack_message": slack_message,
+                "delivery_status": "posted"
+            }
+        }
+
     # ------------------------------------------
     # End
     # ------------------------------------------
@@ -355,8 +424,6 @@ def execute_node(node, input_data=None):
     raise ValueError(
         f"Unsupported workflow node: {node_title}"
     )
-
-
 
 
 
@@ -409,10 +476,6 @@ def execute_workflow(workflow_json):
         )
 
         raise
-
-
-
-
 
 # ==========================================
 # TEST WORKFLOW

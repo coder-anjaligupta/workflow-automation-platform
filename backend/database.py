@@ -1,10 +1,9 @@
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # PostgreSQL Database URL
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:%40aN23JA10LI@localhost:5432/automation_db"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:%40aN23JA10LI@host.docker.internal:5432/automation_db"
 
 # Create PostgreSQL engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

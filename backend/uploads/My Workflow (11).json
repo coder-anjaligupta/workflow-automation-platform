@@ -1,0 +1,108 @@
+{
+  "id": 36,
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "id": "1789134268492",
+      "type": "custom",
+      "position": {
+        "x": 182.64144909859354,
+        "y": 27.158231589950617
+      },
+      "data": {
+        "label": "File Upload Node",
+        "icon": "📁",
+        "title": "File Upload",
+        "inputs": [
+          "input"
+        ],
+        "outputs": [
+          "output"
+        ],
+        "defaultConfig": {
+          "nodeName": "File Upload",
+          "description": "Handles document and file uploads",
+          "allowedExtensions": ".pdf",
+          "maxFileSizeMb": "10",
+          "uploadUrl": "/api/v2/upload",
+          "uploadedFileName": "Smart Disease Prediction System - Final 3.pdf"
+        }
+      },
+      "measured": {
+        "width": 463,
+        "height": 95
+      },
+      "selected": true,
+      "dragging": false
+    },
+    {
+      "id": "1789134754591",
+      "type": "custom",
+      "position": {
+        "x": -184.4693651456186,
+        "y": -34.835908153383876
+      },
+      "data": {
+        "label": "Start Node",
+        "icon": "▶️",
+        "title": "Start",
+        "inputs": [],
+        "outputs": [
+          "output"
+        ],
+        "defaultConfig": {
+          "nodeName": "Start",
+          "description": ""
+        }
+      },
+      "measured": {
+        "width": 254,
+        "height": 95
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "1789134772686",
+      "type": "custom",
+      "position": {
+        "x": 611,
+        "y": 324
+      },
+      "data": {
+        "label": "End Node",
+        "icon": "⏹️",
+        "title": "End",
+        "inputs": [
+          "input"
+        ],
+        "outputs": [],
+        "defaultConfig": {
+          "nodeName": "End",
+          "description": ""
+        }
+      },
+      "measured": {
+        "width": 254,
+        "height": 95
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "1789134754591",
+      "target": "1789134268492",
+      "id": "xy-edge__1789134754591-1789134268492"
+    },
+    {
+      "source": "1789134268492",
+      "target": "1789134772686",
+      "id": "xy-edge__1789134268492-1789134772686"
+    }
+  ],
+  "viewport": {
+    "x": 206.7605037048707,
+    "y": 146.23285079339638,
+    "zoom": 0.5743491774985174
+  }
+}

@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any
 from datetime import datetime
 
-
 # ==========================================
 # USER SCHEMAS
 # Phase 4: Authentication
@@ -15,12 +14,10 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-
 # User Login
 class UserLogin(BaseModel):
     name: str
     password: str
-
 
 # User Response
 class UserOut(BaseModel):
@@ -31,12 +28,10 @@ class UserOut(BaseModel):
     class Config:
         from_attributes = True
 
-
 # JWT Token Response
 class Token(BaseModel):
     access_token: str
     token_type: str
-
 
 # ==========================================
 # WORKFLOW SCHEMAS
@@ -50,13 +45,11 @@ class WorkflowCreate(BaseModel):
     description: Optional[str] = None
     workflow_json: Dict[str, Any]
 
-
 # Update Workflow
 class WorkflowUpdate(BaseModel):
     name: str
     description: Optional[str] = None
     workflow_json: Dict[str, Any]
-
 
 # Workflow Response
 class WorkflowOut(BaseModel):
@@ -69,7 +62,6 @@ class WorkflowOut(BaseModel):
 
     class Config:
         from_attributes = True
-
 
 # ==========================================
 # EXECUTION SCHEMAS

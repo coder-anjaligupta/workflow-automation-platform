@@ -1,0 +1,146 @@
+{
+  "id": 37,
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "id": "1789153141355",
+      "type": "custom",
+      "position": {
+        "x": 121,
+        "y": 99
+      },
+      "data": {
+        "label": "Start Node",
+        "icon": "▶️",
+        "title": "Start",
+        "inputs": [],
+        "outputs": [
+          "output"
+        ],
+        "defaultConfig": {
+          "nodeName": "Start",
+          "description": ""
+        }
+      },
+      "measured": {
+        "width": 254,
+        "height": 95
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "1789153145402",
+      "type": "custom",
+      "position": {
+        "x": 750.1078098700178,
+        "y": 303.30857402513345
+      },
+      "data": {
+        "label": "End Node",
+        "icon": "⏹️",
+        "title": "End",
+        "inputs": [
+          "input"
+        ],
+        "outputs": [],
+        "defaultConfig": {
+          "nodeName": "End",
+          "description": ""
+        }
+      },
+      "measured": {
+        "width": 254,
+        "height": 95
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "1789153148062",
+      "type": "custom",
+      "position": {
+        "x": 193.31593056469455,
+        "y": 316.72863619006523
+      },
+      "data": {
+        "label": "Slack Node",
+        "icon": "💬",
+        "title": "Slack",
+        "inputs": [
+          "input"
+        ],
+        "outputs": [
+          "output"
+        ],
+        "defaultConfig": {
+          "nodeName": "Slack",
+          "description": "Post updates to Slack channel",
+          "channel": "#alerts",
+          "message": "Workflow execution completed without errors!"
+        }
+      },
+      "measured": {
+        "width": 347,
+        "height": 95
+      },
+      "selected": true,
+      "dragging": false
+    },
+    {
+      "id": "1789153149867",
+      "type": "custom",
+      "position": {
+        "x": 619,
+        "y": 87
+      },
+      "data": {
+        "label": "Email Node",
+        "icon": "📧",
+        "title": "Email",
+        "inputs": [
+          "input"
+        ],
+        "outputs": [
+          "output"
+        ],
+        "defaultConfig": {
+          "nodeName": "Email",
+          "description": "Send execution notification email",
+          "recipientEmail": "anjaligupta@gmail.com",
+          "subject": "Workflow Execution Alert",
+          "body": "Your automated workflow run has completed successfully.",
+          "attachment": "/path/to/file.pdf"
+        }
+      },
+      "measured": {
+        "width": 466,
+        "height": 95
+      },
+      "selected": false,
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "source": "1789153141355",
+      "target": "1789153149867",
+      "id": "xy-edge__1789153141355-1789153149867"
+    },
+    {
+      "source": "1789153149867",
+      "target": "1789153148062",
+      "id": "xy-edge__1789153149867-1789153148062"
+    },
+    {
+      "source": "1789153148062",
+      "target": "1789153145402",
+      "id": "xy-edge__1789153148062-1789153145402"
+    }
+  ],
+  "viewport": {
+    "x": 309.1233216101621,
+    "y": 62.223677207768404,
+    "zoom": 0.7578582832551989
+  }
+}

@@ -1,24 +1,45 @@
-# Environment / secrets
+# Environment / Secrets
 .env
 .env.*
 !.env.example
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
 
-# Python
+# Python & Virtual Environment
 __pycache__/
 *.py[cod]
 venv/
 .venv/
 env/
+.pytest_cache/
+backend/.pytest_cache/
+backend/alembic/__pycache__/
 
-# Local databases
+# Local Databases & SQLite
 *.db
 *.sqlite
 *.sqlite3
+backend/auto
+backend/automtion
+backend/automation
 
-# Node
+# Node & Frontend Build/Caches
 node_modules/
 dist/
 build/
+.vite/
+.eslintcache
+
+# Docker & Containers
+.docker/
+*.tar
+
+# Testing & Coverage
+htmlcov/
+.coverage
+.coverage.*
 
 # Logs
 *.log
@@ -28,10 +49,6 @@ logs/
 .vscode/
 .idea/
 
-# OS
+# OS Files
 .DS_Store
 Thumbs.db
-
-# Local SQLite database files
-backend/auto
-backend/automtion
