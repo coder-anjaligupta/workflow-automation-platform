@@ -103,35 +103,42 @@ npm run dev
 ## 3. 🏗️ **Project Architecture**
 
 ```text
-      +-----------------------------------------------------------------------+
-      |                            React Frontend                             |
-      |    (React Flow Canvas, App.jsx, CustomNode Components,                |
-      |                  Import/Export JSON Controllers)                      |
-      +-----------------------------------+-+---------------------------------+
-                                          | |
-                                    REST API / JSON
-                                    (JWT Auth)
-                                          | |
-                                          v v
-      +-----------------------------------------------------------------------+
-      |                            FastAPI Backend                            |
-      |    (Authentication, Workflow Routes, Pydantic Schemas Validation,     |
-      |                      REST API & CRUD Controllers)                     |
-      +-----------------+-----------------------------------+-----------------+
-                        |                                   |
-                        v                                   v
-      +-----------------------------------+   +-------------------------------+
-      |         PostgreSQL Database       |   |        Execution Engine       |
-      |  (SQLAlchemy ORM Models, Alembic  |   |   (Dynamic DAG Node Parsing,  |
-      |   Migrations, User/Workflow Data  |   |   Dispatchers & Step-by-Step  |
-      |      & Error Logging Traces)      |   |    Execution with Errors)     |
-      +-----------------------------------+   +-------------------------------+
-                                          ^
-                                          |
-      +-----------------------------------+-----------------------------------+
-      |                           Docker Compose                              |
-      |   (Container Orchestration for Backend, Frontend & Database Services) |
-      +-----------------------------------------------------------------------+
+                     +-------------------------------------------------------------------------+
+                     |                       WORKFLOW AUTOMATION SYSTEM                        |
+                     +-------------------------------------------------------------------------+
+                                                         |
+                                                         v
+                  +------------------------------------------------------------------------------+
+                  | [ FRONTEND LAYER ] - React.js + Vite + Tailwind CSS                          |
+                  |  -- Authentication Views (Login / Register / JWT Local Storage)              |
+                  |  -- Visual Workflow Canvas Builder (`src/components`, `App.jsx`, `main.jsx`) |
+                  |  -- Dashboard & Execution Tracking UI                                        |
+                  +------------------------------------------------------------------------------+
+                                                         |
+                                                         | HTTP / REST API Requests (JSON Payload)
+                                                         v
+                  +-------------------------------------------------------------------------+
+                  | [ BACKEND LAYER ] - Python Service Engine (FastAPI / Flask)             |
+                  |  -- Main Application Entrypoint & API Controller (`main.py`)            |
+                  |  -- Security & Auth Module (`auth.py` - Bcrypt, JWT Tokens)             |
+                  |  -- Request Data Validation Schemas (`schemas.py` - Pydantic Models)    |
+                  |  -- Core Workflow Execution Engine (`execution_engine.py`)              |
+                  |  -- Database Connection & ORM Management (`database.py`, `models.py`)   |
+                  +-------------------------------------------------------------------------+
+                                    |                                     |
+                                    | SQL Queries / ORM                   | Config & Environment
+                                    v                                     v
+                  +---------------------------------------+ +-------------------------------+
+                  | [ DATABASE LAYER ]                    | | [ CONFIG & CONTAINERIZATION ] |
+                  |  -- Database Engine: PostgreSQL       | |  -- Docker (`Dockerfile`,     |
+                  |     (Relational DB Service)           | |     `docker-compose.yml`)     |
+                  |  -- ORM & Schema: SQLAlchemy          | |  -- Env Vars (`.env`)         |
+                  |  -- Database Tables:                  | |  -- Dependencies              |
+                  |     -- Users                          | |     (`requirements.txt`)      |
+                  |     -- Workflows                      | |                               |
+                  |     -- Tasks                          | |                               |
+                  |     -- Activity Logs                  | |                               |
+                  +---------------------------------------+ +-------------------------------+
 ```
 ---
 
@@ -236,87 +243,88 @@ The core execution engine processes visual graphs as Directed Acyclic Graphs (DA
 
    * **Error Handling & State Persistence:** Failure at any node halts execution, captures execution logs/stack traces, and persists status (`SUCCESS`, `FAILED`) into PostgreSQL.
 
-   * **Logging:** Persists execution logs with execution timestamp and status back to SQLite.
-
 ---
 
 ## 7. 💾 **Database Schema**
 The database relies on PostgreSQL managed through SQLAlchemy ORM and Alembic migrations.
 
 ```text
-       +-------------------+             +-----------------------+
-       |       users       |             |       workflows       |
-       +-------------------+             +-----------------------+
-       | id (PK)           |<-----------+| id (PK)               |
-       | name              |  (1 to N)   | name                  |
-       | email (Unique)    |             | description           |
-       | password (Hashed) |             | workflow_json (JSON)  |
-       +-------------------+             | created_at            |
-                                         | user_id (FK)          |
-                                         +-----------+-----------+
-                                                     |
-                                                 (1 to N)
-                                                     |
-                                         +-----------v-----------+
-                                         |      executions       |
-                                         +-----------------------+
-                                         | id (PK)               |
-                                         | workflow_id (FK)      |
-                                         | status                |
-                                         | logs (TEXT)           |
-                                         | output (JSON)         |
-                                         | error (TEXT)          |
-                                         | started_at            |
-                                         | finished_at           |
-                                         +-----------------------+
+                           +-----------------------------------+
+                           |               USERS               |
+                           +-----------------------------------+
+                           | * id (PK)                         |
+                           | * email                           |
+                           | * password_hash                   |
+                           | * role                            |
+                           | * created_at                      |
+                           +-----------------------------------+
+                                    |                  |
+                              1:N   |                  | 1:N
+                                    v                  v
+                           +-------------------+   +-------------------+
+                           |     WORKFLOWS     |   |   ACTIVITY_LOGS   |
+                           +-------------------+   +-------------------+
+                           | * id (PK)         |   | * id (PK)         |
+                           | * title           |   | * action          |
+                           | * description     |   | * user_id (FK)    |
+                           | * status          |   | * timestamp       |
+                           | * user_id (FK)    |   +-------------------+
+                           | * created_at      |
+                           +-------------------+
+                                    |
+                              1:N   |
+                                    v
+                           +-------------------+
+                           |       TASKS       |
+                           +-------------------+
+                           | * id (PK)         |
+                           | * task_name       |
+                           | * status          |
+                           | * execution_time  |
+                           | * workflow_id (FK)|
+                           +-------------------+
 ```
 ---
 
 ### **Table Definitions**
 
 **1. Users Table**
-
-        id (INTEGER, Primary Key)
-
-        name (VARCHAR, Non-nullable)
-
-        email (VARCHAR, Unique, Indexed, Non-nullable)
-
-        password (VARCHAR, Hashed string, Non-nullable)
+```text
+* id (INTEGER, Primary Key)
+* email (VARCHAR, Unique, Indexed, Non-nullable)
+* password_hash (VARCHAR, Hashed string, Non-nullable)
+* role (VARCHAR, Default: 'user')
+* created_at (TIMESTAMP WITH TIMEZONE, Default: NOW())
+```
 
 **2. Workflows Table**
+```text
+*  id (INTEGER, Primary Key)
+*  title (VARCHAR, Non-nullable)
+*  description (TEXT, Nullable)
+*  status (VARCHAR, e.g., 'active', 'draft', 'archived')
+*  user_id (INTEGER, Foreign Key referencing users.id, Non-nullable)
+*  created_at (TIMESTAMP WITH TIMEZONE, Default: NOW())
+```
 
-        id (INTEGER, Primary Key)
+**3. Tasks Table**
+```text
+*  id (INTEGER, Primary Key)
+*  task_name (VARCHAR, Non-nullable)
+*  status (VARCHAR, e.g., 'PENDING', 'SUCCESS', 'FAILED')
+*  execution_time (VARCHAR / FLOAT, Nullable)
+*  workflow_id (INTEGER, Foreign Key referencing workflows.id, Non-nullable)
+```
 
-        name (VARCHAR, Non-nullable)
-
-        description (TEXT, Nullable)
-
-        workflow_json (JSON, Node-link graph structure)
-
-        created_at (TIMESTAMP WITH TIMEZONE, Default: NOW())
-
-        user_id (INTEGER, Foreign Key referencing users.id)
-
-**3. Executions Table**
-
-        id (INTEGER, Primary Key)
-
-        workflow_id (INTEGER, Foreign Key referencing workflows.id)
-
-        status (VARCHAR, e.g., 'SUCCESS', 'FAILED', 'RUNNING')
-
-        logs (TEXT, Step-by-step runtime logs)
-
-        output (JSON, Execution results and node outputs)
-
-        error (TEXT, Detailed failure trace / stack logs)
-
-        started_at (TIMESTAMP WITH TIMEZONE, Default: NOW())
-
-        finished_at (TIMESTAMP WITH TIMEZONE, Nullable)
-
+**4. Activity_Logs Table**
+```text
+*  id (INTEGER, Primary Key)
+*  action (VARCHAR, Non-nullable)
+*  user_id (INTEGER, Foreign Key referencing users.id, Non-nullable)
+*  timestamp (TIMESTAMP WITH TIMEZONE, Default: NOW())
+```
 ---
+
 
 ## 8. 🔄 **Sample Workflows**
 
