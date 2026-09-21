@@ -469,7 +469,6 @@ frontend/
 
 ## 12. 🎬 **Presentation Deck & Demo Video**
 
----
 
 ### 📊 **Presentation Deck**
 Detailed architecture, system design, and technical slides are available in the repository:
@@ -479,7 +478,7 @@ Detailed architecture, system design, and technical slides are available in the 
 
 ### 📹 **Demo Video**
 Watch the live demonstration and walk-through of the Workflow Automation Platform:
-* 🎬 **[Watch Project Demo Video](https://drive.google.com/file/d/141BTUVzotXbDt03fw_ws4bASsIKbkbKC/view?usp=drivesdk)**
+* 🎬 **[Watch Project Demo Video](https://drive.google.com/file/d/1iaC88RIMa9TUXFpqfMwKo0R-F6MDUqJm/view?usp=drivesdk)**
 
 ---
 
