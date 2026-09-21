@@ -16,6 +16,7 @@ A full-stack Python-Based Drag & Drop Workflow Automation Platform built with Fa
 9. [Bonus Features & Enhancements](#9--bonus-features--enhancements)
 10. [Screenshots](#10--screenshots)
 11. [Future Improvements](#11--future-improvements)
+12. [Presentation Deck & Demo Video](#12-presentation-deck--demo-video)
 
 ---
 
@@ -465,4 +466,25 @@ frontend/
 * **AI Node Integration:** OpenAI API nodes for natural language data transformation.
 
 ---
+
+## 12. 🎬 **Presentation Deck & Demo Video**
+
+---
+
+### 📊 **Presentation Deck**
+Detailed architecture, system design, and technical slides are available in the repository:
+* 📄 *[View PowerPoint Presentation (PPTX)](./slides/Workflow_Automation_Platform.pptx)*
+
+---
+
+### 📹 **Demo Video**
+Watch the live demonstration and walk-through of the Workflow Automation Platform:
+* 🎬 **[Watch Project Demo Video](https://drive.google.com/file/d/141BTUVzotXbDt03fw_ws4bASsIKbkbKC/view?usp=drivesdk)**
+
+---
+
+
+
+
+
 
